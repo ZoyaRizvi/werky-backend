@@ -13,6 +13,29 @@ import {
 
 const db = getFirestore(firebase);
 
+// create new skills assessment test
+export const assessment = async (req, res, next) => {
+  try {
+    const data = req.body
+    const response = await axios.post(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=AIzaSyBK9A3pPDR_lduTqoiBFFn4DUe-P9y8Kk4`,
+      {
+        contents: [
+          {
+            parts: [
+              { text: `Generate 10 multiple choice questions related to ${skill}. Ensure the result is in json format, with questions and answers correctly nested. Make sure to not include answers.
+` },
+            ],
+          },
+        ],
+      }
+    );
+    res.status(200).send(response);
+  } catch (error) {
+    console.log(error)
+  }
+}
+
 export const getProject = async (req, res, next) => {
   try {
     const id = req.params.id;

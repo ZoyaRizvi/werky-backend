@@ -7,11 +7,13 @@ import {
   // updateProduct,
   // deleteProduct,
   getProject,
+  assessment,
 } from '../controllers/productController.js';
 
 const router = express.Router();
 
 router.get('/project/:id', getProject);
+router.post('/assessment',assessment);
 // router.get('/', getProducts);
 // router.post('/new', createProduct);
 // router.get('/product/:id', getProduct);
