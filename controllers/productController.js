@@ -31,7 +31,7 @@ export const assessment = async (req, res, next) => {
         ],
       }
     );
-    res.status(200).send(response);
+    res.status(200).send(response.data);
   } catch (error) {
     console.log(error)
   }
