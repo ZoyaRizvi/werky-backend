@@ -43,16 +43,23 @@ export const assessment = async (req, res, next) => {
         contents: [
           {
             parts: [
-              { text: `Generate 10 multiple choice questions related to ${skill}. Ensure the result is in json format, with questions and options correctly nested. Make sure to not include answers.
-` },
+              { text: `Generate 10 multiple choice questions related to ${skill}. Ensure the result is in json format, with questions, options, and correct answers correctly nested.` },
             ],
           },
         ],
       }
     );
+    const fixedJsonText = fixJsonText(response.data.candidates[0].content.parts[0].text);
+    const quizData = JSON.parse(fixedJsonText);
+
+     // Save to Firestore
+    const docRef = await addDoc(collection(db, 'assessment'), {
+      skill,
+      quizData,
+    });
 
     console.log(fixJsonText(response.data.candidates[0].content.parts[0].text))
-    res.status(200).send(JSON.parse(fixJsonText(response.data.candidates[0].content.parts[0].text))
+    res.status(200).send({ id: docRef.id, ...quizData }
   );
   } catch (error) {
     console.log(error)
