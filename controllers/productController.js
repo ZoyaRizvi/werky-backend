@@ -16,7 +16,7 @@ const db = getFirestore(firebase);
 // create new skills assessment test
 export const assessment = async (req, res, next) => {
   try {
-    const data = req.body
+    const data = req.body.data
     const response = await axios.post(
       `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=AIzaSyBK9A3pPDR_lduTqoiBFFn4DUe-P9y8Kk4`,
       {
