@@ -14,6 +14,25 @@ import {
 
 const db = getFirestore(firebase);
 
+function fixJsonText(jsonText) {
+  // Replace escaped characters
+  jsonText = jsonText.replace(/\n/g, "\n"); // Replace \n with actual newline
+  jsonText = jsonText.replace(/\t/g, "\t"); // Replace \t with tab
+  jsonText = jsonText.replace(/\"/g, '"');  // Replace " with "
+
+  // Normalize line breaks
+  jsonText = jsonText.replace(/\r\n/g, "\n"); // Convert Windows line breaks to Unix
+  jsonText = jsonText.replace(/\r/g, "\n");   // Convert old Mac line breaks to Unix
+
+  // Ensure all property names and string values are in double quotes
+  jsonText = jsonText.replace(/(['"])?([a-zA-Z0-9_]+)(['"])?:/g, '"$2": '); // Fix property names
+  jsonText = jsonText.replace("```json","");
+  jsonText = jsonText.replace("```","");
+
+
+  return jsonText;
+}
+
 // create new skills assessment test
 export const assessment = async (req, res, next) => {
   try {
@@ -24,18 +43,22 @@ export const assessment = async (req, res, next) => {
         contents: [
           {
             parts: [
-              { text: `Generate 10 multiple choice questions related to ${skill}. Ensure the result is in json format, with questions and answers correctly nested. Make sure to not include answers.
+              { text: `Generate 10 multiple choice questions related to ${skill}. Ensure the result is in json format, with questions and options correctly nested. Make sure to not include answers.
 ` },
             ],
           },
         ],
       }
     );
-    res.status(200).send(response.data);
+
+    console.log(fixJsonText(response.data.candidates[0].content.parts[0].text))
+    res.status(200).send(JSON.parse(fixJsonText(response.data.candidates[0].content.parts[0].text))
+  );
   } catch (error) {
     console.log(error)
   }
 }
+
 
 export const getProject = async (req, res, next) => {
   try {
