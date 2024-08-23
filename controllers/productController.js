@@ -33,38 +33,42 @@ function fixJsonText(jsonText) {
   return jsonText;
 }
 
-// create new skills assessment test
 export const assessment = async (req, res, next) => {
   try {
-    const skill = req.body.skill
+    const { skill, level } = req.body;
+
+    // Generate prompt based on skill and level
+    const prompt = `Generate 10 multiple choice questions related to ${skill} at the ${level} level. Ensure the result is in json format, with questions, options, and correct answers correctly nested.`;
+
     const response = await axios.post(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=AIzaSyBK9A3pPDR_lduTqoiBFFn4DUe-P9y8Kk4`,
+      'https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=AIzaSyBK9A3pPDR_lduTqoiBFFn4DUe-P9y8Kk4',
       {
         contents: [
           {
             parts: [
-              { text: `Generate 10 multiple choice questions related to ${skill}. Ensure the result is in json format, with questions, options, and correct answers correctly nested.` },
+              { text: prompt },
             ],
           },
         ],
       }
     );
+
     const fixedJsonText = fixJsonText(response.data.candidates[0].content.parts[0].text);
     const quizData = JSON.parse(fixedJsonText);
 
-     // Save to Firestore
+    // Save to Firestore
     const docRef = await addDoc(collection(db, 'assessment'), {
       skill,
+      level,
       quizData,
     });
 
-    console.log(fixJsonText(response.data.candidates[0].content.parts[0].text))
-    res.status(200).send({ id: docRef.id, ...quizData }
-  );
+    res.status(200).send({ id: docRef.id, ...quizData });
   } catch (error) {
-    console.log(error)
+    console.log(error);
+    res.status(500).send("An error occurred while generating the assessment.");
   }
-}
+};
 
 
 export const getProject = async (req, res, next) => {
