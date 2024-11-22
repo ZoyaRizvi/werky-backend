@@ -6,7 +6,11 @@ import productRoute from './routes/productRoute.js';
 
 const app = express();
 
-app.use(cors());
+app.use(cors({
+  origin: 'https://werkee.onrender.com',
+  method: [ 'GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS' ],
+  credentials: true
+}));
 app.use(express.json());
 
 //routes
